@@ -12,7 +12,8 @@ void destroyWindow();
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-int playerX, playerY;
+float playerX, playerY;
+int ticksLastFrame = 0;
 
 BOOL isGameRunning;
 
@@ -108,8 +109,14 @@ void processInput()
 
 void update()
 {
-	playerX += 1;
-	playerY += 1;
+	int timeToWait = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticksLastFrame);
+	if (timeToWait > 0) SDL_Delay(timeToWait);
+
+	float deltaTime = (SDL_GetTicks() - ticksLastFrame)/ 1000.0f;
+	ticksLastFrame = SDL_GetTicks();
+
+	playerX += (20.0f * deltaTime);
+	playerY += (20.0f * deltaTime);
 }
 
 void render()
@@ -119,7 +126,7 @@ void render()
 	SDL_RenderClear(renderer);
 
 	// TODO: Render all game objects for the current frame.
-	SDL_Rect rect = { playerX, playerY, 20, 20 };
+	SDL_Rect rect = { (int) playerX, (int) playerY, 20, 20 };
 	SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 	SDL_RenderFillRect(renderer, &rect);
 
