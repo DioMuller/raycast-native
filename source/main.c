@@ -2,6 +2,38 @@
 #include <SDL2/SDL.h>
 #include "constants.h"
 
+typedef struct Player_t
+{
+	float x;
+	float y;
+	float width;
+	float height;
+	DIRECTION turnDirection;
+	DIRECTION walkDirection;
+	float rotationAngle;
+	float walkSpeed;
+	float turnSpeed;
+} Player;
+
+const TILE map[MAP_NUM_ROWS][MAP_NUM_COLS] =
+{
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1, 1, 1, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+Player player;
+
 BOOL initializeWindow();
 void setup();
 void processInput();
@@ -9,10 +41,13 @@ void update();
 void render();
 void destroyWindow();
 
+void renderMap();
+void renderPlayer();
+void renderRays();
+
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-float playerX, playerY;
 int ticksLastFrame = 0;
 
 BOOL isGameRunning;
@@ -79,8 +114,15 @@ BOOL initializeWindow()
 
 void setup()
 {
-	playerX = 0;
-	playerY = 0;
+	player.x = WINDOW_WIDTH	/ 2;
+	player.y = WINDOW_HEIGHT / 2;
+	player.width = 5;
+	player.height = 5;
+	player.turnDirection = NONE;
+	player.walkDirection = NONE;
+	player.rotationAngle = PI / 2;
+	player.walkSpeed = 100;
+	player.turnSpeed = 45 * RAD;
 }
 
 void processInput()
@@ -114,9 +156,6 @@ void update()
 
 	float deltaTime = (SDL_GetTicks() - ticksLastFrame)/ 1000.0f;
 	ticksLastFrame = SDL_GetTicks();
-
-	playerX += (20.0f * deltaTime);
-	playerY += (20.0f * deltaTime);
 }
 
 void render()
@@ -126,9 +165,9 @@ void render()
 	SDL_RenderClear(renderer);
 
 	// TODO: Render all game objects for the current frame.
-	SDL_Rect rect = { (int) playerX, (int) playerY, 20, 20 };
-	SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-	SDL_RenderFillRect(renderer, &rect);
+	renderMap();
+	renderPlayer();
+	renderRays();
 
 	// Present Render
 	SDL_RenderPresent(renderer);
@@ -138,4 +177,39 @@ void destroyWindow()
 {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+}
+
+////////////////////////////////
+// Rendering
+////////////////////////////////
+void renderMap()
+{
+	for (int i = 0; i < MAP_NUM_ROWS; i++)
+	{
+		for (int j = 0; j < MAP_NUM_COLS; j++)
+		{
+			int tileX = j * TILE_SIZE;
+			int tileY = i * TILE_SIZE;
+			int tileColor = map[i][j] != 0 ? 255 : 0;
+
+			SDL_SetRenderDrawColor(renderer, tileColor, tileColor, tileColor, 255);
+			SDL_Rect mapTileRect = {
+				tileX * MINIMAP_SCALE_FACTOR,
+				tileY * MINIMAP_SCALE_FACTOR,
+				TILE_SIZE * MINIMAP_SCALE_FACTOR,
+				TILE_SIZE * MINIMAP_SCALE_FACTOR
+			};
+			SDL_RenderFillRect(renderer, &mapTileRect);
+		}
+	}
+}
+
+void renderPlayer()
+{
+
+}
+
+void renderRays()
+{
+
 }
