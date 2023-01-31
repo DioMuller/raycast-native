@@ -1,4 +1,6 @@
-﻿#include <stdio.h>
+﻿#pragma warning( disable: 26451 )
+
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include "constants.h"
 
@@ -194,10 +196,10 @@ void renderMap()
 
 			SDL_SetRenderDrawColor(renderer, tileColor, tileColor, tileColor, 255);
 			SDL_Rect mapTileRect = {
-				tileX * MINIMAP_SCALE_FACTOR,
-				tileY * MINIMAP_SCALE_FACTOR,
-				TILE_SIZE * MINIMAP_SCALE_FACTOR,
-				TILE_SIZE * MINIMAP_SCALE_FACTOR
+				(int) (tileX * MINIMAP_SCALE_FACTOR),
+				(int)(tileY * MINIMAP_SCALE_FACTOR),
+				(int)(TILE_SIZE * MINIMAP_SCALE_FACTOR),
+				(int)(TILE_SIZE * MINIMAP_SCALE_FACTOR)
 			};
 			SDL_RenderFillRect(renderer, &mapTileRect);
 		}
